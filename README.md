@@ -1,3 +1,3 @@
 # project work
 
-## backend
+## Internal management 
