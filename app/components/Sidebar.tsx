@@ -2,6 +2,7 @@ import { CubeIcon, HomeIcon, UserGroupIcon } from "@heroicons/react/solid";
 import { NavLink } from "@remix-run/react";
 import { classNames } from "~/helpers/ui-helper";
 
+
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
   { name: "Products", href: "/products", icon: CubeIcon },
@@ -16,8 +17,8 @@ export function Sidebar() {
         <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
           <div className="flex items-center flex-shrink-0 px-4">
             <img
-              className="h-8 w-auto"
-              src="https://tailwindui.com/img/logos/workflow-logo-indigo-600-mark-gray-800-text.svg"
+              className="h-auto max-w-auto"
+              src={"/assets/seren-up-logo.png"}
               alt="Workflow"
             />
           </div>

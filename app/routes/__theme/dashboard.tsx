@@ -16,7 +16,7 @@ type LoaderData = {
 
 
 //var productOverviewList: ProductOverview [] = JSON.parse(jsonString)
-export const laoder: LoaderFunction = async ({
+export const loader: LoaderFunction = async ({
 }): Promise<LoaderData> => {
 
   const jsonString = [
@@ -48,12 +48,13 @@ type ListProps = {
 function List({ productsOverviewList }: ListProps) {
   return (
 
-    <div className="flex bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+    <div className="pl-32 pr-0 grid grid-cols-4 gap-4 justify-items-auto h-max w-max py-8 px-2 justify-items-auto">
       {productsOverviewList.map(element => (
-        <>
-          <h1>{element.status}</h1>
-          <p>{element.status}</p>
-        </>
+        <div className="bg-white h-64 w-64 py-8 px-2 shadow sm:rounded-lg sm:px-10">
+          <h1>{element.status}</h1> 
+          <br/>
+          <p>{element.total}</p>
+        </div>
       ))}
     </div>
   );
@@ -62,7 +63,7 @@ function List({ productsOverviewList }: ListProps) {
 
 export default function Dashboard() {
   const loaderData = useLoaderData<LoaderData>();
-  return (<div className="bg-white p-2">
+  return (<div className="h-screen w-screen bg-gradient-to-b from-gray-100 to-blue-100 px-0 py-0">
     <List productsOverviewList={loaderData.data} />
   </div>
   );
