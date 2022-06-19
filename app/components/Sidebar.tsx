@@ -1,5 +1,5 @@
-import { CubeIcon, HomeIcon, UserGroupIcon } from "@heroicons/react/solid";
-import { NavLink } from "@remix-run/react";
+import { CubeIcon, HomeIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/solid";
+import { NavLink, Link } from "@remix-run/react";
 import { classNames } from "~/helpers/ui-helper";
 
 
@@ -9,6 +9,11 @@ const navigation = [
   { name: "Users", href: "/users", icon: UserGroupIcon },
 ];
 
+const foot = [ 
+  { name: "Profile", href: "/profile", icon: UserCircleIcon },
+]
+
+const profileIcon = UserCircleIcon.prototype
 export function Sidebar() {
   return (
     <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
@@ -19,7 +24,7 @@ export function Sidebar() {
             <img
               className="h-auto max-w-auto"
               src={"/assets/seren-up-logo.png"}
-              alt="Workflow"
+              alt="Seren-Up"
             />
           </div>
           <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
@@ -45,15 +50,13 @@ export function Sidebar() {
             ))}
           </nav>
         </div>
-        <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-          <a href="#" className="flex-shrink-0 w-full group block">
-            <div className="flex items-center">
-              <div>
-                <img
-                  className="inline-block h-9 w-9 rounded-full"
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt=""
-                />
+        <Link to="/profile" className="flex-shrink-0 w-full group block">
+        <div className="flex items-center">
+              <div  className="text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-6 w-6"
+                  aria-hidden="true">
+
+              {/*Insert the icon UserCircle here insteahead of the profile picture, ANDRE PLIS HELP*/}
+              {profileIcon}
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
@@ -64,6 +67,10 @@ export function Sidebar() {
                 </p>
               </div>
             </div>
+        </Link>
+        <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
+          <a href="/profile" className="flex-shrink-0 w-full group block">
+
           </a>
         </div>
       </div>
