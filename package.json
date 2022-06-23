@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@heroicons/react": "^1.0.6",
-    "@remix-run/dev": "^1.6.0",
+    "@remix-run/dev": "^1.6.1",
 
     "@remix-run/eslint-config": "^1.6.0",
     "@types/jsonwebtoken": "^8.5.8",
