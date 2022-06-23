@@ -5,7 +5,7 @@ import { classNames } from "~/helpers/ui-helper";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-  { name: "Products", href: "/products", icon: CubeIcon },
+  { name: "Products", href: "/products_sample", icon: CubeIcon },
   { name: "Users", href: "/users", icon: UserGroupIcon },
 ];
 

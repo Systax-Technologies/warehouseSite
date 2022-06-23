@@ -1,8 +1,6 @@
 import { LoaderFunction } from "@remix-run/node";
 import { useLoaderData, Link } from "@remix-run/react";
-import React from "react";
-import { z } from "zod";
-import { database } from "~/helpers/db-helper.server";
+import { ApiClient } from "jwt-rest-api-client";
 
 type ProductOverview = {
   status: string,
@@ -13,13 +11,32 @@ type LoaderData = {
   data: ProductOverview[]
 };
 
-
+// const instance = new ApiClient({
+//   baseURL: "http://api/v1/",
+// });
+// instance
+//   .get('warehouse/products/count/by-status?')
+//   .then(function (response){
+//     console.log(response)
+//   })
 
 //var productOverviewList: ProductOverview [] = JSON.parse(jsonString)
 export const loader: LoaderFunction = async ({
 }): Promise<LoaderData> => {
 
-  const jsonString = [
+  
+
+  // Default options are marked with *
+  // const response = await fetch('http://api/v1/warehouse/products/count/by-status/', {
+
+  //     method: 'get', 
+  //     headers: {
+  //       'Authorization': `Bearer ${jwt}` ,
+  //     }
+
+  //   }}}
+
+  const jsonString: ProductOverview[] = [
     {
       "status": "In Stock",
       "total": 218
@@ -38,44 +55,39 @@ export const loader: LoaderFunction = async ({
     }
   ];
 
-return {data: jsonString}
+  return { data: jsonString }
 };
 
-type ListProps = {
-  productsOverviewList: ProductOverview[]
-}
 
-function List({ productsOverviewList }: ListProps) {
-  return (
-
-    <div className="pl-32  grid grid-cols-4 gap-4 justify-items-auto h-max w-max py-32 justify-items-auto">
-      {productsOverviewList.map(element => (
-        <div className="bg-white h-64 w-64 py-8 px-2 shadow sm:rounded-lg sm:px-10">
-          <h1>{element.status}</h1> 
-          <br/>
-          <p>{element.total}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/*<div className="flex">
-      <h3 className="text-lg leading-6 font-medium text-gray-900">Products Dashboard</h3>
-      <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3>
-        {productsOverviewList.map((element) => (
-          <div className="px-4 py-5 shadow rounded-lg overflow-hidden sm:p-6" >
-            <dt className="text-sm font-medium text-gray-500 truncate">{element.status}</dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">{element.total}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>*/
 
 export default function Dashboard() {
   const loaderData = useLoaderData<LoaderData>();
-  return (<div className="h-screen max-w bg-gradient-to-b from-gray-100 to-blue-100 px-0 py-0">
-    <List productsOverviewList={loaderData.data} />
-  </div>
+  return (
+    <>
+      <div className="max-w-7xl">
+        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+      </div>
+      <Stats stats={loaderData.data} />
+      {console.log()}
+    </>
+  );
+}
+
+type StatsProps = {
+  stats: ProductOverview[]
+}
+
+function Stats({ stats }: StatsProps) {
+  return (
+    <div>
+      <dl className="py-4 grid grid-cols-1 gap-5 sm:grid-cols-4">
+        {stats.map((item) => (
+          <div key={item.status} className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
+            <dt className="text-sm font-medium text-gray-500 truncate">{item.status}</dt>
+            <dd className="mt-1 text-3xl font-semibold text-gray-900">{item.total}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   );
 }
