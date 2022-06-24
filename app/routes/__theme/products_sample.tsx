@@ -1,8 +1,6 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { LoaderFunction } from "@remix-run/node";
-import { useLoaderData, Link } from "@remix-run/react";
-import { List } from "~/components/List";
-import { Table } from "~/components/Table";
+import { useLoaderData } from "@remix-run/react";
 
 type LoaderData = {
   products: ListableProduct[];
@@ -98,9 +96,13 @@ export default function ProductsList() {
   return (
     <>
       <Table>
-        <Table.Header
-          headers={["id", "model", "description", "size", "color", "status"]}
-        />
+        <Table.Header>
+          <TableHeaderTh>Id</TableHeaderTh>
+          <TableHeaderTh>Model</TableHeaderTh>
+          <TableHeaderTh>Description</TableHeaderTh>
+          <TableHeaderTh>Color</TableHeaderTh>
+          <TableHeaderTh>Status</TableHeaderTh>
+        </Table.Header>
         <Table.Body></Table.Body>
       </Table>
     </>

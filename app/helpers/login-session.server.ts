@@ -1,8 +1,8 @@
 import { createCookieSessionStorage } from "@remix-run/node";
 
-export const loginSession = createCookieSessionStorage({
+export const accessToken = createCookieSessionStorage({
   cookie: {
-    name: "loginSession",
+    name: "accessToken",
     maxAge: 3600, // 1 hour
   },
 });

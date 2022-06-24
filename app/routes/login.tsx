@@ -1,6 +1,8 @@
 import { XCircleIcon } from "@heroicons/react/solid";
-import { ActionFunction } from "@remix-run/node";
+import { ActionFunction, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
+import { hashPassword } from "~/helpers/crypto.server";
+import { accessToken } from "~/helpers/login-session.server";
 
 type ActionDataOnError = {
   error: true;
@@ -12,8 +14,7 @@ export const action: ActionFunction = async ({
   const formBody = await request.formData();
 
   const email = formBody.get("email");
-  const password = formBody.get("password");
-  const remember = formBody.get("remember");
+  const password = formBody.get("password") as string;
 
   if (email == null || password == null) {
     return {
@@ -21,27 +22,42 @@ export const action: ActionFunction = async ({
     };
   }
 
-  // const employee = await findEemployeeByLogin(
-  //   String(email),
-  //   hashPassword(String(password)),
-  // );
+  const body = JSON.stringify({
+    email,
+    password: hashPassword(password),
+  });
 
-  // if (employee) {
-  //   const session = await loginSession.getSession(null);
-  //   if (remember === "on") {
-  //     session.set("isLogged", true);
-  //   }
+  console.log(body);
 
-  //   throw redirect("/dashboard", {
-  //     headers: {
-  //       "Set-Cookie": await loginSession.commitSession(session),
-  //     },
-  //   });
-  // }
+  const response = await fetch("http://127.0.0.1:3000/api/v1/warehouse/login", {
+    method: "post",
+    body,
+  });
 
-  return {
-    error: true,
-  };
+  let responseBody: any;
+
+  try {
+    responseBody = await response.json();
+  } catch (_) {
+    return {
+      error: true,
+    };
+  }
+
+  if ("accessToken" in responseBody) {
+    const session = await accessToken.getSession();
+
+    session.set("accessToken", responseBody.accessToken);
+    throw redirect("/dashboard", {
+      headers: {
+        "Set-Cookie": await accessToken.commitSession(session),
+      },
+    });
+  } else {
+    return {
+      error: true,
+    };
+  }
 };
 
 export default function Login() {
@@ -108,24 +124,6 @@ export default function Login() {
                 />
               </div>
             </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember"
-                  name="remember"
-                  type="checkbox"
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="remember"
-                  className="ml-2 block text-sm text-gray-900"
-                >
-                  Remember me
-                </label>
-              </div>
-            </div>
-
             <div>
               <button
                 type="submit"

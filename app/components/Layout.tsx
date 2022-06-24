@@ -1,18 +1,24 @@
 import { Outlet } from "@remix-run/react";
 import { Sidebar } from "./Sidebar";
 
-export function Layout() {
+type LayoutProps = {
+  isAdmin: boolean;
+};
+
+export function Layout({ isAdmin }: LayoutProps) {
   return (
-    <div className="h-screen w-screen">
-      <Sidebar />
+    <div>
+      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+        <Sidebar isAdmin={isAdmin} />
+      </div>
       <div className="md:pl-64 flex flex-col flex-1">
-      <main className="flex-1">
-            <div className="">
-              <div className="py-6 max-w-7xl mx-auto px-4 sm:px-6 md:px-8 bg-gradient-to-b from-white to-orange-200 h-screen">
-                <Outlet/>
-              </div>
+        <main className="flex-1">
+          <div className="py-6">
+            <div className="mx-auto px-4 sm:px-6 md:px-8">
+              <Outlet />
             </div>
-          </main>
+          </div>
+        </main>
       </div>
     </div>
   );
