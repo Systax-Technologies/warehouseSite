@@ -1,5 +1,5 @@
 import { Layout } from "~/components/Layout";
 
-export default function Example() {
+export default function Theme() {
   return <Layout/>;
 }
