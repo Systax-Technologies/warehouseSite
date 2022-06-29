@@ -65,6 +65,8 @@ export function TableHeader({ children }: TableHeaderProps) {
   );
 }
 
+Table.Header = TableHeader;
+
 type TableHeaderThProps = React.PropsWithChildren<{}>;
 
 export function TableHeaderTh({ children }: TableHeaderThProps) {
@@ -85,6 +87,8 @@ type TableBodyProps = React.PropsWithChildren<{}>;
 export function TableBody({ children }: TableBodyProps) {
   return <tbody className="bg-white">{children}</tbody>;
 }
+
+Table.Body = TableBody;
 
 type TableBodyRowProps = React.PropsWithChildren<{
   className: string;

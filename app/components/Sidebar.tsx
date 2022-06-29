@@ -1,5 +1,10 @@
-import { CubeIcon, HomeIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/solid";
-import { NavLink, Link } from "@remix-run/react";
+import {
+  CubeIcon,
+  CubeTransparentIcon,
+  HomeIcon,
+  UserGroupIcon,
+} from "@heroicons/react/solid";
+import { NavLink } from "@remix-run/react";
 import { classNames } from "~/helpers/ui-helper";
 
 const basicNavigation = [
@@ -8,7 +13,12 @@ const basicNavigation = [
 ];
 
 const secondaryNavigation = [
-  { name: "Users", href: "/users", icon: UserGroupIcon },
+  { name: "Employees", href: "/employees", icon: UserGroupIcon },
+  {
+    name: "Active Products",
+    href: "/activeProducts",
+    icon: CubeTransparentIcon,
+  },
 ];
 
 type SidebarProps = {
@@ -50,30 +60,27 @@ export function Sidebar({ isAdmin }: SidebarProps) {
                   {item.name}
                 </NavLink>
               ))}
-              {isAdmin && (
-                <div className="border-t pt-1 border-gray-100">
-                  {secondaryNavigation.map((item) => (
-                    <NavLink
-                      key={item.name}
-                      to={item.href}
-                      className={({ isActive }) => {
-                        return classNames(
-                          isActive
-                            ? "bg-gray-100 text-gray-900"
-                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-                          "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
-                        );
-                      }}
-                    >
-                      <item.icon
-                        className="text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-6 w-6"
-                        aria-hidden="true"
-                      />
-                      {item.name}
-                    </NavLink>
-                  ))}
-                </div>
-              )}
+              {isAdmin &&
+                secondaryNavigation.map((item) => (
+                  <NavLink
+                    key={item.name}
+                    to={item.href}
+                    className={({ isActive }) => {
+                      return classNames(
+                        isActive
+                          ? "bg-gray-100 text-gray-900"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                        "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
+                      );
+                    }}
+                  >
+                    <item.icon
+                      className="text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-6 w-6"
+                      aria-hidden="true"
+                    />
+                    {item.name}
+                  </NavLink>
+                ))}
             </div>
           </nav>
         </div>
