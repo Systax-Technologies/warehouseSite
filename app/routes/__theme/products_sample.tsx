@@ -1,6 +1,7 @@
-/* This example requires Tailwind CSS v2.0+ */
 import { LoaderFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, Link } from "@remix-run/react";
+import { Table } from "~/components/Table";
+
 
 type LoaderData = {
   products: ListableProduct[];
