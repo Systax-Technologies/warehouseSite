@@ -18,13 +18,13 @@ type Role = "ADMIN" | "WORKER";
 
 export const loader: LoaderFunction = async ({
   request,
-}): Promise<LoaderData> => {
+}): Promise<LoaderData | Response> => {
   const session = await accessToken.getSession(request.headers.get("Cookie"));
 
   const jwt = session.get("accessToken");
 
   if (jwt == null || typeof jwt !== "string") {
-    throw redirect("/login");
+    return redirect("/login");
   }
 
   const response = await fetch(
@@ -42,13 +42,13 @@ export const loader: LoaderFunction = async ({
   try {
     responseBody = await response.clone().json();
   } catch (e) {
-    console.log(response);
-    throw response;
+    return response;
   }
-  return responseBody.employee;
+
+  return responseBody;
 };
 
-export default function Example() {
+export default function Theme() {
   const loaderData = useLoaderData<LoaderData>();
 
   return <Layout isAdmin={loaderData.role === "ADMIN"} />;

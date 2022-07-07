@@ -1,7 +1,9 @@
-import { LoaderFunction } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { XCircleIcon } from "@heroicons/react/solid";
+import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
+import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { BackendError } from "~/components/BackendError";
 import { Breadcrumb } from "~/components/Breadcrumb";
+import { accessToken } from "~/helpers/login-session.server";
 
 type Product = {
   id: string;
@@ -48,6 +50,45 @@ export const loader: LoaderFunction = async ({}): Promise<LoaderData> => {
   return { error: true };
 };
 
+type ActionData = { error: boolean };
+
+export const action: ActionFunction = async ({
+  request,
+}): Promise<ActionData> => {
+  const session = await accessToken.getSession(request.headers.get("Cookie"));
+
+  const jwt = session.get("accessToken");
+
+  if (jwt == null || typeof jwt !== "string") {
+    throw redirect("/login");
+  }
+
+  const formBody = await request.formData();
+  const productId = formBody.get("delete-employee");
+
+  if (productId == null) {
+    return {
+      error: true,
+    };
+  }
+
+  const response = await fetch(
+    `http://127.0.0.1:3000/api/v1/warehouse/products/${productId}`,
+    {
+      method: "delete",
+      headers: {
+        authorization: `Bearer ${jwt}`,
+      },
+    },
+  );
+
+  if (response.ok) {
+    return { error: false };
+  } else {
+    return { error: true };
+  }
+};
+
 export default function Products() {
   const loaderData = useLoaderData<LoaderData>();
 
@@ -61,13 +102,14 @@ export default function Products() {
   }
 
   const { products } = loaderData;
+  const actionData = useActionData<ActionData>();
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <Breadcrumb></Breadcrumb>
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-xl font-semibold text-gray-900">Product</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Products</h1>
           <p className="mt-2 text-sm text-gray-700">
             A list of all product types in the warehouse
           </p>
@@ -81,6 +123,26 @@ export default function Products() {
           </Link>
         </div>
       </div>
+
+      {actionData?.error && (
+        <div className="pb-3">
+          <div className="rounded-md bg-red-50 p-4 border-solid border-2 border-red-400">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <XCircleIcon
+                  className="h-5 w-5 text-red-400"
+                  aria-hidden="true"
+                />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">
+                  Mmh sorry, something bad happened
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="mt-8 flex flex-col">
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
@@ -150,7 +212,7 @@ export default function Products() {
                         <Form method="post">
                           <button
                             type="submit"
-                            name="delete-employee"
+                            name="delete-product"
                             value={product.id}
                             className="text-red-600 hover:text-red-900"
                           >

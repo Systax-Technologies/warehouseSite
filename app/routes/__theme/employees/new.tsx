@@ -99,7 +99,7 @@ export default function AddProduct() {
       >
         <div className="space-y-8 divide-y sm:space-y-5">
           <div className="flex flex-row">
-            <h3 className="grow text-lg leading-6 font-large text-gray-900">
+            <h3 className="grow text-lg leading-6 font-xl text-gray-900">
               New Employee
             </h3>
             <div className="justify-end">
