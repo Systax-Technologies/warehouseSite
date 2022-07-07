@@ -28,7 +28,7 @@ export const loader: LoaderFunction = async ({
   }
 
   const response = await fetch(
-    "http://127.0.0.1:3000/api/v1/warehouse/employee",
+    "http://127.0.0.1:3000/api/v1/warehouse/employees/employee",
     {
       method: "get",
       headers: {
@@ -42,12 +42,10 @@ export const loader: LoaderFunction = async ({
   try {
     responseBody = await response.clone().json();
   } catch (e) {
+    console.log(response);
     throw response;
   }
-
-  return {
-    ...responseBody,
-  };
+  return responseBody.employee;
 };
 
 export default function Example() {

@@ -1,25 +1,118 @@
-import { Link } from "@remix-run/react";
+import { XCircleIcon } from "@heroicons/react/solid";
+import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
+import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
+import { BackendError } from "~/components/BackendError";
+import { Breadcrumb } from "~/components/Breadcrumb";
+import { accessToken } from "~/helpers/login-session.server";
+
+type LoaderDataOnError = {
+  error: true;
+};
+
+type LoaderData =
+  | {
+      employees: {
+        id: string;
+        email: string;
+        password: string;
+        createdAt: Date;
+        updatedAt: Date;
+        firstName: string;
+        lastName: string;
+        role: "ADMIN" | "WORKER";
+      }[];
+    }
+  | LoaderDataOnError;
+
+export const loader: LoaderFunction = async ({
+  request,
+}): Promise<LoaderData> => {
+  const response = await fetch(
+    "http://127.0.0.1:3000/api/v1/warehouse/employees",
+    {
+      method: "get",
+    },
+  );
+
+  if (response.ok) {
+    let responseBody: any;
+
+    try {
+      responseBody = await response.clone().json();
+    } catch (e) {
+      return { error: true };
+    }
+
+    return responseBody;
+  }
+
+  return { error: true };
+};
+
+type ActionData = { error: boolean };
+
+export const action: ActionFunction = async ({
+  request,
+}): Promise<ActionData> => {
+  const session = await accessToken.getSession(request.headers.get("Cookie"));
+
+  const jwt = session.get("accessToken");
+
+  if (jwt == null || typeof jwt !== "string") {
+    throw redirect("/login");
+  }
+
+  const formBody = await request.formData();
+  const employeeId = formBody.get("delete-employee");
+
+  if (employeeId == null) {
+    return {
+      error: true,
+    };
+  }
+
+  const body = JSON.stringify({ id: employeeId });
+
+  const response = await fetch(
+    "http://127.0.0.1:3000/api/v1/warehouse/employees/employee",
+    {
+      method: "delete",
+      headers: {
+        authorization: `Bearer ${jwt}`,
+      },
+      body,
+    },
+  );
+
+  if (response.ok) {
+    return { error: false };
+  } else {
+    return { error: true };
+  }
+};
 
 export default function Products() {
-  const people = [
-    {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
-    },
-    // More people...
-  ];
+  const loaderData = useLoaderData<LoaderData>();
+
+  if ("error" in loaderData) {
+    return (
+      <div className="px-4 sm:px-6 lg:px-8">
+        <Breadcrumb></Breadcrumb>
+        <BackendError />
+      </div>
+    );
+  }
+
+  const { employees } = loaderData;
+  const actionData = useActionData<ActionData>();
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
+      <Breadcrumb></Breadcrumb>
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-gray-900">Employees</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            A list of all the users in your account including their name, title,
-            email and role.
-          </p>
+          <p className="mt-2 text-sm text-gray-700">A list of all employees</p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
           <Link
@@ -30,6 +123,25 @@ export default function Products() {
           </Link>
         </div>
       </div>
+      {actionData?.error && (
+        <div className="pb-3">
+          <div className="rounded-md bg-red-50 p-4 border-solid border-2 border-red-400">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <XCircleIcon
+                  className="h-5 w-5 text-red-400"
+                  aria-hidden="true"
+                />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">
+                  Mmh sorry, something bad happened
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="mt-8 flex flex-col">
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
@@ -42,12 +154,6 @@ export default function Products() {
                       className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                     >
                       Name
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Title
                     </th>
                     <th
                       scope="col"
@@ -70,27 +176,28 @@ export default function Products() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {people.map((person) => (
-                    <tr key={person.email}>
+                  {employees.map((employee) => (
+                    <tr key={employee.email}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {person.name}
+                        {`${employee.firstName} ${employee.lastName}`}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {person.title}
+                        {employee.email}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {person.email}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {person.role}
+                        <RoleBadge role={employee.role} />
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <Link
-                          to={`/employees/${person.email}`}
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          Edit<span className="sr-only">, {person.name}</span>
-                        </Link>
+                        <Form method="post">
+                          <button
+                            type="submit"
+                            name="delete-employee"
+                            value={employee.id}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            Delete
+                          </button>
+                        </Form>
                       </td>
                     </tr>
                   ))}
@@ -101,5 +208,25 @@ export default function Products() {
         </div>
       </div>
     </div>
+  );
+}
+
+type RoleBadgeProps = {
+  role: "ADMIN" | "WORKER";
+};
+
+function RoleBadge({ role }: RoleBadgeProps) {
+  if (role === "ADMIN") {
+    return (
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+        {"ADMIN"}
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+      {"WORKER"}
+    </span>
   );
 }

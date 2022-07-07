@@ -1,26 +1,75 @@
-import { Link } from "@remix-run/react";
+import { LoaderFunction } from "@remix-run/node";
+import { Form, Link, useLoaderData } from "@remix-run/react";
+import { BackendError } from "~/components/BackendError";
 import { Breadcrumb } from "~/components/Breadcrumb";
 
-export default function Products() {
-  const people = [
+type Product = {
+  id: string;
+  model: string;
+  imageUrl: string;
+  description: string;
+  color: string;
+  size: string;
+  price: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type LoaderDataOnError = {
+  error: true;
+};
+
+type LoaderData =
+  | {
+      products: Product[];
+    }
+  | LoaderDataOnError;
+
+export const loader: LoaderFunction = async ({}): Promise<LoaderData> => {
+  const response = await fetch(
+    "http://127.0.0.1:3000/api/v1/warehouse/products",
     {
-      name: "Lindsay Walton",
-      title: "Front-end Developer",
-      email: "lindsay.walton@example.com",
-      role: "Member",
+      method: "get",
     },
-    // More people...
-  ];
+  );
+
+  if (response.ok) {
+    let responseBody: any;
+
+    try {
+      responseBody = await response.clone().json();
+    } catch (e) {
+      return { error: true };
+    }
+
+    return responseBody;
+  }
+
+  return { error: true };
+};
+
+export default function Products() {
+  const loaderData = useLoaderData<LoaderData>();
+
+  if ("error" in loaderData) {
+    return (
+      <div className="px-4 sm:px-6 lg:px-8">
+        <Breadcrumb></Breadcrumb>
+        <BackendError />
+      </div>
+    );
+  }
+
+  const { products } = loaderData;
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <Breadcrumb></Breadcrumb>
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-xl font-semibold text-gray-900">Product Types</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Product</h1>
           <p className="mt-2 text-sm text-gray-700">
-            A list of all the users in your account including their name, title,
-            email and role.
+            A list of all product types in the warehouse
           </p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
@@ -43,25 +92,13 @@ export default function Products() {
                       scope="col"
                       className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                     >
-                      Name
+                      Model
                     </th>
                     <th
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
-                      Title
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Email
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Role
+                      Price
                     </th>
                     <th
                       scope="col"
@@ -75,39 +112,51 @@ export default function Products() {
                     >
                       <span className="sr-only">Instances</span>
                     </th>
+                    <th
+                      scope="col"
+                      className="relative py-3.5 pl-3 pr-4 sm:pr-6"
+                    >
+                      <span className="sr-only">Delete</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {people.map((person) => (
-                    <tr key={person.email}>
+                  {products.map((product) => (
+                    <tr key={product.id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {person.name}
+                        {product.model}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {person.title}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {person.email}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {person.role}
+                        {product.price}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                         <Link
-                          to={`/products/${person.email}`}
+                          to={`/products/${product.id}`}
                           className="text-indigo-600 hover:text-indigo-900"
                         >
-                          Edit<span className="sr-only">, {person.name}</span>
+                          Edit
                         </Link>
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                         <Link
-                          to={`/products/${person.email}/instances`}
+                          to={`/products/${product.id}/instances`}
                           className="text-indigo-600 hover:text-indigo-900"
                         >
                           Instances
-                          <span className="sr-only">, {person.name}</span>
                         </Link>
+                      </td>
+
+                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                        <Form method="post">
+                          <button
+                            type="submit"
+                            name="delete-employee"
+                            value={product.id}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            Delete
+                          </button>
+                        </Form>
                       </td>
                     </tr>
                   ))}
