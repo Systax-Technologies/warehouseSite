@@ -4,12 +4,13 @@ import {
   HomeIcon,
   UserGroupIcon,
 } from "@heroicons/react/solid";
-import { NavLink } from "@remix-run/react";
+import { Link, NavLink } from "@remix-run/react";
 import { classNames } from "~/helpers/ui-helper";
 
 const basicNavigation = [
   { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
   { name: "Products", href: "/products", icon: CubeIcon },
+  { name: "Customers", href: "/customers", icon: UserGroupIcon },
 ];
 
 const secondaryNavigation = [
@@ -22,10 +23,12 @@ const secondaryNavigation = [
 ];
 
 type SidebarProps = {
-  isAdmin: boolean;
+  firstName: string;
+  lastName: string;
+  role: "ADMIN" | "WORKER";
 };
 
-export function Sidebar({ isAdmin }: SidebarProps) {
+export function Sidebar({ firstName, lastName, role }: SidebarProps) {
   return (
     <>
       {/* Sidebar component, swap this element with another sidebar if you like */}
@@ -53,7 +56,7 @@ export function Sidebar({ isAdmin }: SidebarProps) {
                   {item.name}
                 </NavLink>
               ))}
-              {isAdmin &&
+              {role === "ADMIN" &&
                 secondaryNavigation.map((item) => (
                   <NavLink
                     key={item.name}
@@ -76,6 +79,15 @@ export function Sidebar({ isAdmin }: SidebarProps) {
                 ))}
             </div>
           </nav>
+        </div>
+        <div className="flex-shrink-0 flex border-t border-gray-300">
+          <Link to="/employees/me" className="flex-shrink-0 w-full group block">
+            <div className="pt-4 pb-2 flex items-center">
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-600 hover:text-gray-900">{`${firstName} ${lastName}`}</p>
+              </div>
+            </div>
+          </Link>
         </div>
       </div>
     </>

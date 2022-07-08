@@ -1,5 +1,6 @@
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { Link, useCatch } from "@remix-run/react";
+import { Link, useCatch, useLoaderData } from "@remix-run/react";
+import { BackendError } from "~/components/BackendError";
 import { Breadcrumb } from "~/components/Breadcrumb";
 import { accessToken } from "~/helpers/login-session.server";
 
@@ -61,15 +62,17 @@ export const loader: LoaderFunction = async ({
   }
 };
 
-export default function EditProduct() {
-  return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <Breadcrumb>
-        <Breadcrumb.Item name={"Products"} href={"/products"} />
-      </Breadcrumb>
-      <h1>Edit Product</h1>
-    </div>
-  );
+export default function CustomerInfo() {
+  const loaderData = useLoaderData<LoaderData>();
+
+  if ("error" in loaderData) {
+    return (
+      <div className="px-4 sm:px-6 lg:px-8">
+        <Breadcrumb></Breadcrumb>
+        <BackendError />
+      </div>
+    );
+  }
 }
 
 export function CatchBoundary() {

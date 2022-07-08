@@ -1,5 +1,5 @@
 import { ChevronRightIcon, HomeIcon } from "@heroicons/react/solid";
-import { Link } from "react-router-dom";
+import { Link } from "@remix-run/react";
 
 type BreadcrumbProps = React.PropsWithChildren<{}>;
 

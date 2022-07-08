@@ -27,10 +27,13 @@ export const action: ActionFunction = async ({
     password: hashPassword(password),
   });
 
-  const response = await fetch("http://127.0.0.1:3000/api/v1/warehouse/login", {
-    method: "post",
-    body,
-  });
+  const response = await fetch(
+    "http://127.0.0.1:3000/api/v1/warehouse/employees/login",
+    {
+      method: "post",
+      body,
+    },
+  );
 
   let responseBody: any;
 

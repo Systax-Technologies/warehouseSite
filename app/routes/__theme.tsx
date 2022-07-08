@@ -28,11 +28,11 @@ export const loader: LoaderFunction = async ({
   }
 
   const response = await fetch(
-    "http://127.0.0.1:3000/api/v1/warehouse/employees/employee",
+    "http://127.0.0.1:3000/api/v1/warehouse/employees/me",
     {
       method: "get",
       headers: {
-        Authorization: `Bearer ${jwt}`,
+        authorization: `Bearer ${jwt}`,
       },
     },
   );
@@ -42,6 +42,9 @@ export const loader: LoaderFunction = async ({
   try {
     responseBody = await response.clone().json();
   } catch (e) {
+    if (response.status === 401) {
+      return redirect("/login");
+    }
     return response;
   }
 
@@ -51,5 +54,11 @@ export const loader: LoaderFunction = async ({
 export default function Theme() {
   const loaderData = useLoaderData<LoaderData>();
 
-  return <Layout isAdmin={loaderData.role === "ADMIN"} />;
+  return (
+    <Layout
+      firstName={loaderData.firstName}
+      lastName={loaderData.lastName}
+      role={loaderData.role}
+    />
+  );
 }

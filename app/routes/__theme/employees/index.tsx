@@ -14,9 +14,8 @@ type LoaderData =
       employees: {
         id: string;
         email: string;
-        password: string;
-        createdAt: Date;
-        updatedAt: Date;
+        createdAt: string;
+        updatedAt: string;
         firstName: string;
         lastName: string;
         role: "ADMIN" | "WORKER";
@@ -27,10 +26,20 @@ type LoaderData =
 export const loader: LoaderFunction = async ({
   request,
 }): Promise<LoaderData> => {
+  const session = await accessToken.getSession(request.headers.get("Cookie"));
+  const jwt = session.get("accessToken");
+
+  if (jwt == null || typeof jwt !== "string") {
+    throw redirect("/login");
+  }
+
   const response = await fetch(
     "http://127.0.0.1:3000/api/v1/warehouse/employees",
     {
       method: "get",
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
     },
   );
 
@@ -71,16 +80,13 @@ export const action: ActionFunction = async ({
     };
   }
 
-  const body = JSON.stringify({ id: employeeId });
-
   const response = await fetch(
-    "http://127.0.0.1:3000/api/v1/warehouse/employees/employee",
+    `http://127.0.0.1:3000/api/v1/warehouse/employees/${employeeId}`,
     {
       method: "delete",
       headers: {
         authorization: `Bearer ${jwt}`,
       },
-      body,
     },
   );
 
@@ -123,26 +129,26 @@ export default function Products() {
           </Link>
         </div>
       </div>
-      {actionData?.error && (
-        <div className="pb-3">
-          <div className="rounded-md bg-red-50 p-4 border-solid border-2 border-red-400">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <XCircleIcon
-                  className="h-5 w-5 text-red-400"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">
-                  Mmh sorry, something bad happened
-                </h3>
+      <div className="pt-3 flex flex-col">
+        {actionData?.error && (
+          <div className="pb-3">
+            <div className="rounded-md bg-red-50 p-4 border-solid border-2 border-red-400">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <XCircleIcon
+                    className="h-5 w-5 text-red-400"
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">
+                    Mmh sorry, something bad happened
+                  </h3>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-      <div className="mt-8 flex flex-col">
+        )}
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -169,6 +175,12 @@ export default function Products() {
                     </th>
                     <th
                       scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Created At
+                    </th>
+                    <th
+                      scope="col"
                       className="relative py-3.5 pl-3 pr-4 sm:pr-6"
                     >
                       <span className="sr-only">Edit</span>
@@ -186,6 +198,9 @@ export default function Products() {
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         <RoleBadge role={employee.role} />
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {employee.createdAt}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                         <Form method="post">

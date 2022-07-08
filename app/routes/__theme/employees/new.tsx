@@ -5,13 +5,13 @@ import { Breadcrumb } from "~/components/Breadcrumb";
 import { hashPassword } from "~/helpers/crypto.server";
 import { accessToken } from "~/helpers/login-session.server";
 
-type ActionDataOn = {
+type ActionDataOnError = {
   error: true;
 };
 
 export const action: ActionFunction = async ({
   request,
-}): Promise<ActionDataOn> => {
+}): Promise<ActionDataOnError> => {
   const session = await accessToken.getSession(request.headers.get("Cookie"));
 
   const jwt = session.get("accessToken");
@@ -48,7 +48,7 @@ export const action: ActionFunction = async ({
   const body = JSON.stringify({ email, firstName, lastName, role, password });
 
   const response = await fetch(
-    "http://127.0.0.1:3000/api/v1/warehouse/employees/employee",
+    "http://127.0.0.1:3000/api/v1/warehouse/employees",
     {
       method: "post",
       headers: {
@@ -66,7 +66,7 @@ export const action: ActionFunction = async ({
 };
 
 export default function AddProduct() {
-  const actionData = useActionData<ActionDataOn>();
+  const actionData = useActionData<ActionDataOnError>();
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <Breadcrumb>
@@ -85,7 +85,7 @@ export default function AddProduct() {
               </div>
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-red-800">
-                  Employee register failed
+                  Employee registration failed
                 </h3>
               </div>
             </div>
@@ -102,20 +102,6 @@ export default function AddProduct() {
             <h3 className="grow text-lg leading-6 font-xl text-gray-900">
               New Employee
             </h3>
-            <div className="justify-end">
-              <Link
-                to="/employees"
-                className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Cancel
-              </Link>
-              <button
-                type="submit"
-                className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Save
-              </button>
-            </div>
           </div>
 
           <div className="space-y-6 sm:space-y-5">
@@ -129,7 +115,7 @@ export default function AddProduct() {
                 </label>
                 <div className="mt-1">
                   <input
-                    type="input"
+                    type="text"
                     name="first-name"
                     id="first-name"
                     className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -147,7 +133,7 @@ export default function AddProduct() {
                 </label>
                 <div className="mt-1">
                   <input
-                    type="input"
+                    type="text"
                     name="last-name"
                     id="last-name"
                     className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -182,7 +168,7 @@ export default function AddProduct() {
 
               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                 <label
-                  htmlFor="country"
+                  htmlFor="role"
                   className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                 >
                   Role
@@ -201,6 +187,20 @@ export default function AddProduct() {
               </div>
             </div>
           </div>
+        </div>
+        <div className="pt-8 flex justify-end">
+          <Link
+            to="/employees"
+            className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Cancel
+          </Link>
+          <button
+            type="submit"
+            className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Save
+          </button>
         </div>
       </Form>
     </div>

@@ -27,11 +27,23 @@ type LoaderData =
     }
   | LoaderDataOnError;
 
-export const loader: LoaderFunction = async ({}): Promise<LoaderData> => {
+export const loader: LoaderFunction = async ({
+  request,
+}): Promise<LoaderData> => {
+  const session = await accessToken.getSession(request.headers.get("Cookie"));
+  const jwt = session.get("accessToken");
+
+  if (jwt == null || typeof jwt !== "string") {
+    throw redirect("/login");
+  }
+
   const response = await fetch(
     "http://127.0.0.1:3000/api/v1/warehouse/products",
     {
       method: "get",
+      headers: {
+        authorization: `Bearer ${jwt}`,
+      },
     },
   );
 
@@ -64,7 +76,7 @@ export const action: ActionFunction = async ({
   }
 
   const formBody = await request.formData();
-  const productId = formBody.get("delete-employee");
+  const productId = formBody.get("delete-product");
 
   if (productId == null) {
     return {
@@ -81,6 +93,8 @@ export const action: ActionFunction = async ({
       },
     },
   );
+
+  console.log(response.status);
 
   if (response.ok) {
     return { error: false };
@@ -124,26 +138,26 @@ export default function Products() {
         </div>
       </div>
 
-      {actionData?.error && (
-        <div className="pb-3">
-          <div className="rounded-md bg-red-50 p-4 border-solid border-2 border-red-400">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <XCircleIcon
-                  className="h-5 w-5 text-red-400"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">
-                  Mmh sorry, something bad happened
-                </h3>
+      <div className="pt-3 flex flex-col">
+        {actionData?.error && (
+          <div className="pb-3">
+            <div className="rounded-md bg-red-50 p-4 border-solid border-2 border-red-400">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <XCircleIcon
+                    className="h-5 w-5 text-red-400"
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">
+                    Mmh sorry, something bad happened
+                  </h3>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-      <div className="mt-8 flex flex-col">
+        )}
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
