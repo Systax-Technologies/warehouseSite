@@ -1,7 +1,6 @@
 import { XCircleIcon } from "@heroicons/react/solid";
 import { ActionFunction, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
-import { hashPassword } from "~/helpers/crypto.server";
 import { accessToken } from "~/helpers/login-session.server";
 
 type ActionDataOnError = {
@@ -24,7 +23,7 @@ export const action: ActionFunction = async ({
 
   const body = JSON.stringify({
     email,
-    password: hashPassword(password),
+    password,
   });
 
   const response = await fetch(

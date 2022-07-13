@@ -32,14 +32,14 @@ export const loader: LoaderFunction = async ({
     throw redirect("/login");
   }
 
-  const customerId = params.customerId;
+  const productId = params.productId;
 
-  if (customerId == null) {
-    throw redirect("/customers");
+  if (productId == null) {
+    throw redirect("/products");
   }
 
   const response = await fetch(
-    `http://127.0.0.1:3000/api/v1/warehouse/customers/${customerId}`,
+    `http://127.0.0.1:3000/api/v1/warehouse/products/${productId}`,
     {
       method: "get",
       headers: {
