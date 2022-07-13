@@ -34,13 +34,13 @@ export const loader: LoaderFunction = async ({
   }
 
   const response = await fetch(
-    "http://127.0.0.1:3000/api/v1/warehouse/employees",
+    "http://192.168.103.136:3000/api/v1/warehouse/employees",
     {
       method: "get",
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
-    },
+    }
   );
 
   if (response.ok) {
@@ -81,13 +81,13 @@ export const action: ActionFunction = async ({
   }
 
   const response = await fetch(
-    `http://127.0.0.1:3000/api/v1/warehouse/employees/${employeeId}`,
+    `http://192.168.103.136:3000/api/v1/warehouse/employees/${employeeId}`,
     {
       method: "delete",
       headers: {
         authorization: `Bearer ${jwt}`,
       },
-    },
+    }
   );
 
   if (response.ok) {

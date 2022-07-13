@@ -68,14 +68,14 @@ export const action: ActionFunction = async ({
   });
 
   const response = await fetch(
-    "http://127.0.0.1:3000/api/v1/warehouse/products",
+    "http://192.168.103.136:3000/api/v1/warehouse/products",
     {
       method: "post",
       headers: {
         authorization: `Bearer ${jwt}`,
       },
       body,
-    },
+    }
   );
 
   if (response.ok) {

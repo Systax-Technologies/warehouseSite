@@ -35,13 +35,13 @@ export const loader: LoaderFunction = async ({
   }
 
   const response = await fetch(
-    "http://127.0.0.1:3000/api/v1/warehouse/customers",
+    "http://192.168.103.136:3000/api/v1/warehouse/customers",
     {
       method: "get",
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
-    },
+    }
   );
 
   if (response.ok) {

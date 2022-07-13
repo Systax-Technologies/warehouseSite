@@ -47,14 +47,14 @@ export const action: ActionFunction = async ({
   const body = JSON.stringify({ email, firstName, lastName, role, password });
 
   const response = await fetch(
-    "http://127.0.0.1:3000/api/v1/warehouse/employees",
+    "http://192.168.103.136:3000/api/v1/warehouse/employees",
     {
       method: "post",
       headers: {
         authorization: `Bearer ${jwt}`,
       },
       body,
-    },
+    }
   );
 
   if (response.ok) {

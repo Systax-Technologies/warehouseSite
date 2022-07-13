@@ -38,13 +38,13 @@ export const loader: LoaderFunction = async ({
   }
 
   const response = await fetch(
-    "http://127.0.0.1:3000/api/v1/warehouse/products",
+    "http://192.168.103.136:3000/api/v1/warehouse/products",
     {
       method: "get",
       headers: {
         authorization: `Bearer ${jwt}`,
       },
-    },
+    }
   );
 
   if (response.ok) {
@@ -85,13 +85,13 @@ export const action: ActionFunction = async ({
   }
 
   const response = await fetch(
-    `http://127.0.0.1:3000/api/v1/warehouse/products/${productId}`,
+    `http://192.168.103.136:3000/api/v1/warehouse/products/${productId}`,
     {
       method: "delete",
       headers: {
         authorization: `Bearer ${jwt}`,
       },
-    },
+    }
   );
 
   console.log(response.status);
